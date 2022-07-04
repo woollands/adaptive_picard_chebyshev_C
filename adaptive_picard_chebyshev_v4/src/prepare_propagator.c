@@ -39,7 +39,7 @@
 
 void prepare_propagator(double* r0, double* v0, double t0, double t_final, double dt, double tp, double tol,
   int N, int M, int seg, int* prep_HS, double* t_orig, double* tvec,
-  double* P1, double* P2, double* T1, double* T2, double* A, double* Ta){
+  double* P1, double* T1, double* A, double* Ta){
 
   // Compute Keplerian Orbit Period
   double a, e, Period, n;
@@ -105,45 +105,30 @@ void prepare_propagator(double* r0, double* v0, double t0, double t_final, doubl
   double* temp2;
   double* temp3;
   double* temp4;
-  double* temp5;
-  double* temp6;
-  temp1 = &arr_T2[idN][0];
-  temp2 = &arr_P2[idN][0];
-  temp3 = &arr_T1[idN][0];
-  temp4 = &arr_P1[idN][0];
-  temp5 = &arr_Ta[idN][0];
-  temp6 = &arr_A[idN][0];
+  temp1 = &arr_T1[idN][0];
+  temp2 = &arr_P1[idN][0];
+  temp3 = &arr_Ta[idN][0];
+  temp4 = &arr_A[idN][0];
 
   // BUILD MATRICES
   for (int j=1; j<=M+1; j++){
     for (int k=1; k<=N+1; k++){
-      T2[ID2(j,k,M+1)] = temp1[ID2(j,k,Nmax+1)];  // Chebyshev Position Matrix
+      T1[ID2(j,k,M+1)] = temp1[ID2(j,k,Nmax+1)];  // Chebyshev Matrix
     }
   }
   for (int j=1; j<=N+1; j++){
     for (int k=1; k<=N; k++){
-      P2[ID2(j,k,N+1)] = temp2[ID2(j,k,Nmax+1)];  // Second Integration Operator (Velocity to Position)
+      P1[ID2(j,k,N+1)] = temp2[ID2(j,k,Nmax+1)];  // Integration Operator
     }
   }
   for (int j=1; j<=M+1; j++){
     for (int k=1; k<=N; k++){
-      T1[ID2(j,k,M+1)] = temp3[ID2(j,k,Nmax+1)];  // Chebyshev Velocity Matrix
+      Ta[ID2(j,k,M+1)] = temp3[ID2(j,k,Nmax+1)];  // Chebyshev Matrix
     }
   }
   for (int j=1; j<=N; j++){
-    for (int k=1; k<=N-1; k++){
-      P1[ID2(j,k,N)] = temp4[ID2(j,k,Nmax+1)];    // First Integration Operator (Acceleration to Velocity)
-    }
-  }
-  for (int j=1; j<=M+1; j++){
-    for (int k=1; k<=N-1; k++){
-      Ta[ID2(j,k,M+1)] = temp5[ID2(j,k,Nmax+1)];  // Chebyshev Acceleration Matrix
-    }
-  }
-  for (int j=1; j<=N-1; j++){
     for (int k=1; k<=M+1; k++){
-      A[ID2(j,k,N-1)] = temp6[ID2(j,k,Nmax+1)];   // Least Squares Operator
+      A[ID2(j,k,N)] = temp4[ID2(j,k,Nmax+1)];  // Least Squares Operator
     }
   }
-
 }
